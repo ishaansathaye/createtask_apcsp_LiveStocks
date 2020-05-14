@@ -15,125 +15,109 @@ import csv
 import pandas as pd
 import matplotlib.dates as mdates
 import datetime as dt
+from datetime import timedelta
 import matplotlib.ticker as mticker
+import matplotlib.animation as animation
 
 
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1,1,1)
-
-stock = yf.Ticker("NVDA")
-
-hist = stock.history(period="1mo", rounding=True)
-
-# for item in hist:
-#     print(item.Open)
-
-# df = pd.DataFrame(hist)
-# print(df)
-# print(df['Open'])
+ax1 = plt.subplot2grid((1, 1), (0, 0))
 
 
 
-# myvalues = [i['2020-05-07'] for i in hist if '2020-05-07' in i]
-# print(hist['Date'])
+def animate(i):
+    stock = yf.Ticker("NVDA")
 
-# print(hist['Close'])
-
-dateData = hist['Close']
-dateData.to_csv('date.csv')
-dateOHLC = []
-with open('date.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        dateOHLC.append(i[0])
-
-openData = hist['Open']
-openData.to_csv('open.csv')
-openOHLC = []
-with open('open.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        openOHLC.append(i[1])
-
-highData = hist['High']
-highData.to_csv('high.csv')
-highOHLC = []
-with open('high.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        highOHLC.append(i[1])
-
-lowData = hist['Low']
-lowData.to_csv('low.csv')
-lowOHLC = []
-with open('low.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        lowOHLC.append(i[1])
-
-closeData = hist['Close']
-closeData.to_csv('close.csv')
-closeOHLC = []
-with open('close.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        closeOHLC.append(i[1])
-
-# ohlc = []
-
-# ohlc.append(dateOHLC)
-# ohlc.append(openOHLC)
-# ohlc.append(highOHLC)
-# ohlc.append(lowOHLC)
-# ohlc.append(closeOHLC)
-
-def convertArratInt(array):
-    for i in range(0, len(array)): 
-        array[i] = float(array[i]) 
-
-convertArratInt(openOHLC)
-convertArratInt(highOHLC)
-convertArratInt(lowOHLC)
-convertArratInt(closeOHLC)
-
-newdateOHLC = []
-def convertDate2Num(array):
-    for i in array:
-        dateTimeOBJ = dt.datetime.strptime(i, '%Y-%m-%d')
-        t1 = dateTimeOBJ.timetuple()
-        newformat = time.mktime(t1)
-        newdateOHLC.append(newformat)
-convertDate2Num(dateOHLC)
-
-x = 0
-y = len(newdateOHLC)
-ohlc = []
-while x < y:
-    appendMe = newdateOHLC[x], openOHLC[x], highOHLC[x], lowOHLC[x], closeOHLC[x]
-    ohlc.append(appendMe)
-    x += 1
-
-
+    hist = stock.history(period="5d", rounding=True)
     
+    # putting data into csv
+    dateData = hist['Close']
+    dateData.to_csv('date.csv')
+    dateOHLC = []
+    with open('date.csv') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(f)
+        for i in reader:
+            dateOHLC.append(i[0])
 
+    openData = hist['Open']
+    openData.to_csv('open.csv')
+    openOHLC = []
+    with open('open.csv') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(f)
+        for i in reader:
+            openOHLC.append(i[1])
 
-# hist['Close'].plot()
-# ohlc = []
-# appendMe = hist['Close'], hist['Open'], hist['High'], hist['Low'], hist['Volume']
-# ohlc.append(appendMe)
+    highData = hist['High']
+    highData.to_csv('high.csv')
+    highOHLC = []
+    with open('high.csv') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(f)
+        for i in reader:
+            highOHLC.append(i[1])
 
-# hist.plot()
-candlestick_ohlc(ax1, ohlc, width=0.4, colorup='g', colordown='r')
+    lowData = hist['Low']
+    lowData.to_csv('low.csv')
+    lowOHLC = []
+    with open('low.csv') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(f)
+        for i in reader:
+            lowOHLC.append(i[1])
+
+    closeData = hist['Close']
+    closeData.to_csv('close.csv')
+    closeOHLC = []
+    with open('close.csv') as f:
+        reader = csv.reader(f, delimiter=",")
+        next(f)
+        for i in reader:
+            closeOHLC.append(i[1])
+
+    #converting prices into int
+    def convertArratInt(array):
+        for i in range(0, len(array)): 
+            array[i] = float(array[i]) 
+    convertArratInt(openOHLC)
+    convertArratInt(highOHLC)
+    convertArratInt(lowOHLC)
+    convertArratInt(closeOHLC)
+
+    # converting date into num
+    newdateOHLC = []
+    def convertDate2Num(array):
+        for i in array:
+            dateTimeOBJ = dt.datetime.strptime(i, '%Y-%m-%d')
+            t1 = dateTimeOBJ.timetuple()
+            newformat = time.mktime(t1)
+            newdateOHLC.append(newformat)
+    convertDate2Num(dateOHLC)
+
+    # appending required data for candlestick chart
+    x = 0
+    y = len(newdateOHLC)
+    ohlc = []
+    while x < y:
+        appendMe = newdateOHLC[x], openOHLC[x], highOHLC[x], lowOHLC[x], closeOHLC[x]
+        ohlc.append(appendMe)
+        x += 1
+
+    ax1.clear()
+    ax1.grid(True)
+    candlestick_ohlc(ax1, ohlc, width=10000, colorup='g', colordown='r')
+
+# ax1.xaxis.set_major_locator(xmajor_locator)
 # for label in ax1.xaxis.get_ticklabels():
-#         label.set_rotation(45)
-# ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y-%d'))
-ax1.grid(True)
+#         print(label)
+# ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d-%Y'))
+
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Stock Name')
+ani = animation.FuncAnimation(fig, animate, interval=1000)
 plt.show()
 
 # print()

@@ -46,12 +46,12 @@ def graph_data(days):
     candlestick_ohlc(ax1, ohlc, width=0.4, colorup='g', colordown='r')
 
     for label in ax1.xaxis.get_ticklabels():
-        label.set_rotation(45)
-    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y-%d'))
-    ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
+        # label.set_rotation(45)
+        print(label)
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    # ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
     ax1.grid(True)
 
-    print(ohlc)
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.title('stock')
