@@ -27,20 +27,18 @@ def time_memory():
     print(str(round((process.memory_info().rss)/1000000)) + " MB") # in bytes
 
 
-# plot size, labels, and grid
-fig = plt.figure(figsize=(20,10.7))
+# plot size, labels, grid, and different axes
+fig = plt.figure(figsize=(20,10.7)) # size for bigger screens (20, 10.7)
 ax1 = plt.subplot2grid((4, 1), (2, 0), rowspan=2, colspan=1)
 ax1.grid(False)
 plt.xlabel('Date')
 plt.ylabel('Price')
-ax2 = plt.subplot2grid((4, 1), (0, 0), rowspan=2, colspan=1, sharey=ax1) 
-ax2.grid(True)
-plt.title('Stock Name')
+ax2 = plt.subplot2grid((4, 1), (0, 0), rowspan=2, colspan=1) 
 
 
 # getting stock information using yfinance library
-stock = yf.Ticker("AAPL")
-hist = stock.history(period="1y", rounding=True)
+stock = yf.Ticker("TSLA")
+hist = stock.history(period="5d", rounding=True)
 
 
 # parsing date data, converting to string and creating array
@@ -50,45 +48,18 @@ for i in dateData:
     i = str(i)
     dateOHLC.append(i)
 
-# parsing open stock info, creating csv file, adding data to array
-openData = hist['Open']
-openData.to_csv('open.csv')
-openOHLC = []
-with open('open.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        openOHLC.append(i[1])
 
-# parsing high stock info, creating csv file, adding data to array
-highData = hist['High']
-highData.to_csv('high.csv')
-highOHLC = []
-with open('high.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        highOHLC.append(i[1])
+# parsing open stock info and adding data to array
+openOHLC = hist["Open"].tolist()
 
-# parsing low stock info, creating csv file, adding data to array
-lowData = hist['Low']
-lowData.to_csv('low.csv')
-lowOHLC = []
-with open('low.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        lowOHLC.append(i[1])
+# parsing high stock info and adding data to array
+highOHLC = hist["High"].tolist()
 
-# parsing close stock info, creating csv file, adding data to array
-closeData = hist['Close']
-closeData.to_csv('close.csv')
-closeOHLC = []
-with open('close.csv') as f:
-    reader = csv.reader(f, delimiter=",")
-    next(f)
-    for i in reader:
-        closeOHLC.append(i[1])
+# parsing low stock info and adding data to array
+lowOHLC = hist["Low"].tolist()
+
+# parsing close stock info and adding data to array
+closeOHLC = hist["Close"].tolist()
 
 
 #converting prices into int
@@ -121,13 +92,33 @@ while x < y:
     ohlc.append(appendMe)
     x += 1
 
+# animating data for first graph displaying close prices
+def animate(i):
+    ticker = yf.Ticker('TSLA')
+    tsla_df = ticker.history(period="5d")
+    ax2 = tsla_df['Close']
+    # stockLive = yf.Ticker("AAPL")
+    # liveDate = []
+    # dateDataLive = hist.index
+    # for i in dateDataLive:
+    #     i = str(i)
+    #     liveDate.append(i)
+    # liveClose = hist["Close"].tolist()
+        
+    
+    # ax2.grid(True)
+    plt.title('Stock Name')
+    # plt.xlabel('')
+    # plt.setp(ax2.get_xticklabels(), visible=False) # hiding top graph x axis labels
+    ax2.plot()
+
 
 candlestick_ohlc(ax1, ohlc, width=1./24, colorup='g', colordown='r') # adding data to candlestick chart
-plt.subplots_adjust(left=0.05, bottom=0.11, right=0.9, top=0.95, wspace=0.2, hspace=0) # adjusting window
+ani = animation.FuncAnimation(fig, animate, interval=1000)
+plt.subplots_adjust(left=0.05, bottom=0.11, right=0.9, top=0.95, wspace=0.2, hspace=0.73) # adjusting window
 for label in ax1.xaxis.get_ticklabels(): # rotating date labels on x axis
         label.set_rotation(45)
 ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d-%Y')) # converting x-axis to proper date format
-plt.setp(ax2.get_xticklabels(), visible=False) # hiding top graph x axis labels
 plt.show()
 
-time_memory()
+# time_memory()
