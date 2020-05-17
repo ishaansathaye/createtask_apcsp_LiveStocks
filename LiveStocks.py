@@ -1,13 +1,8 @@
-# Memory
 import os
 import psutil
 process = psutil.Process()
-
-# Time
 import time
 start_time = time.time()
-
-# Stocks
 import yfinance as yf
 import matplotlib.pyplot as plt
 from mplfinance.original_flavor import candlestick_ohlc
@@ -27,6 +22,11 @@ def time_memory():
     print(str(round((process.memory_info().rss)/1000000)) + " MB") # in bytes
 
 
+stockName = input('Stock Name: ')
+stockPeriod = input('Stock History (Options: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, max): ')
+
+
+
 # plot size, labels, grid, and different axes
 fig = plt.figure(figsize=(20,10.7)) # size for bigger screens (20, 10.7)
 ax1 = plt.subplot2grid((4, 1), (2, 0), rowspan=2, colspan=1)
@@ -34,11 +34,12 @@ ax1.grid(False)
 plt.xlabel('Date')
 plt.ylabel('Price')
 ax2 = plt.subplot2grid((4, 1), (0, 0), rowspan=2, colspan=1) 
+ax2l = plt.subplot2grid((4, 1), (0, 0), rowspan=2, colspan=1)
 
 
 # getting stock information using yfinance library
-stock = yf.Ticker("TSLA")
-hist = stock.history(period="5d", rounding=True)
+stock = yf.Ticker(stockName)
+hist = stock.history(period=stockPeriod, rounding=True)
 
 
 # parsing date data, converting to string and creating array
@@ -77,8 +78,6 @@ def bytespdate2num(b):
 newdateOHLC = []
 def convertDate2Num(array):
     for i in array:
-        # dateTimeOBJ = dt.datetime.strptime(i, '%Y-%m-%d')
-        # t1 = dateTimeOBJ.timetuple()
         newformat = bytespdate2num(i)
         newdateOHLC.append(newformat)
 convertDate2Num(dateOHLC)
@@ -94,26 +93,19 @@ while x < y:
 
 # animating data for first graph displaying close prices
 def animate(i):
-    ticker = yf.Ticker('TSLA')
-    tsla_df = ticker.history(period="5d")
+    ticker = yf.Ticker(stockName)
+    tsla_df = ticker.history(period=stockPeriod)
     ax2 = tsla_df['Close']
-    # stockLive = yf.Ticker("AAPL")
-    # liveDate = []
-    # dateDataLive = hist.index
-    # for i in dateDataLive:
-    #     i = str(i)
-    #     liveDate.append(i)
-    # liveClose = hist["Close"].tolist()
-        
-    
-    # ax2.grid(True)
-    plt.title('Stock Name')
-    # plt.xlabel('')
-    # plt.setp(ax2.get_xticklabels(), visible=False) # hiding top graph x axis labels
+    updateClose = hist["Close"].tolist()
+    bbox_props = dict(boxstyle='round', fc='w', ec='k', lw=1)  # adding annotation for last price
+    ax2l.annotate(str(updateClose[-1]), (dateOHLC[-1], updateClose[-1]), xytext=(dateOHLC[-1], updateClose[-1]), bbox=bbox_props, fontsize='small')
+    plt.title(stockName.upper())
     ax2.plot()
+    
 
 
 candlestick_ohlc(ax1, ohlc, width=1./24, colorup='g', colordown='r') # adding data to candlestick chart
+ax2l.plot()
 ani = animation.FuncAnimation(fig, animate, interval=1000)
 plt.subplots_adjust(left=0.05, bottom=0.11, right=0.9, top=0.95, wspace=0.2, hspace=0.73) # adjusting window
 for label in ax1.xaxis.get_ticklabels(): # rotating date labels on x axis
