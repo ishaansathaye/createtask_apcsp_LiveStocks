@@ -94,10 +94,11 @@ while x < y:
 # animating data for first graph displaying close prices
 def animate(i):
     ticker = yf.Ticker(stockName)
-    tsla_df = ticker.history(period=stockPeriod)
-    ax2 = tsla_df['Close']
-    updateClose = hist["Close"].tolist()
+    df = ticker.history(period=stockPeriod)
+    ax2 = df['Close']
+    updateClose = df["Close"].tolist()
     bbox_props = dict(boxstyle='round', fc='w', ec='k', lw=1)  # adding annotation for last price
+    ax2l.clear()
     ax2l.annotate(str(updateClose[-1]), (dateOHLC[-1], updateClose[-1]), xytext=(dateOHLC[-1], updateClose[-1]), bbox=bbox_props, fontsize='small')
     plt.title(stockName.upper())
     ax2.plot()
@@ -106,7 +107,7 @@ def animate(i):
 
 candlestick_ohlc(ax1, ohlc, width=1./24, colorup='g', colordown='r') # adding data to candlestick chart
 ax2l.plot()
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig, animate, interval=500)
 plt.subplots_adjust(left=0.05, bottom=0.11, right=0.9, top=0.95, wspace=0.2, hspace=0.73) # adjusting window
 for label in ax1.xaxis.get_ticklabels(): # rotating date labels on x axis
         label.set_rotation(45)
