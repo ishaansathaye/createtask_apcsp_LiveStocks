@@ -67,10 +67,10 @@ closeOHLC = hist["Close"].tolist()
 def convertArratInt(array):
     for i in range(0, len(array)): 
         array[i] = float(array[i]) 
-convertArratInt(openOHLC)
-convertArratInt(highOHLC)
-convertArratInt(lowOHLC)
-convertArratInt(closeOHLC)
+    convertArratInt(openOHLC)
+    convertArratInt(highOHLC)
+    convertArratInt(lowOHLC)
+    convertArratInt(closeOHLC)
 
 # converting date into correct num format
 def bytespdate2num(b):
